@@ -1,0 +1,4 @@
+
+{% extends "base.html" %}
+{% block title %}Not Found{% endblock %}
+{% block content %}<div class="empty-page"><div class="icon">⌁</div><h1>{{ title }}</h1><p>The requested civic record could not be found.</p><a class="btn primary" href="{{ url_for('index') }}">Back home</a></div>{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ complaint.complaint_id }}{% endblock %}
+{% block content %}
+<div class="detail-card">
+  <div class="detail-top"><div><div class="eyebrow">{{ complaint.complaint_id }} · {{ complaint.date[:10] }}</div><h1>{{ complaint.description }}</h1></div><span class="badge {{ complaint.priority|lower }}">{{ complaint.priority }}</span></div>
+  <div class="detail-grid">
+    <div><span>AI Category</span><strong>{{ complaint.category }}</strong></div>
+    <div><span>Department</span><strong>{{ complaint.assigned_department }}</strong></div>
+    <div><span>Status</span><strong>{{ complaint.status }}</strong></div>
+    <div><span>Location</span><strong>{{ complaint.location }}</strong></div>
+    <div><span>Risk level</span><strong>{{ complaint.risk_level }}</strong></div>
+    <div><span>Public impact</span><strong>{{ complaint.public_impact }}</strong></div>
+    <div><span>Recommended response</span><strong>{{ complaint.recommended_response_time }}</strong></div>
+    <div><span>Confidence</span><strong>{{ complaint.confidence }}</strong></div>
+  </div>
+  <div class="ai-panel">
+    <div class="ai-title"><span>✦</span> CivicAI Analysis</div>
+    <div class="analysis-grid">
+      <div><span>Summary</span><p>{{ complaint.summary or "Analysis unavailable." }}</p></div>
+      <div><span>Reason</span><p>{{ complaint.reason or "Pending AI analysis." }}</p></div>
+      <div><span>Risk reasoning</span><p>{{ complaint.risk_reason or "Not available." }}</p></div>
+    </div>
+  </div>
+  {% if complaint.image %}<div class="panel image-preview"><h3>Submitted photo</h3><img src="{{ url_for('uploaded_file', filename=complaint.image) }}" alt="Complaint evidence"></div>{% endif %}
+  {% if complaint.duplicate_matches %}
+  <div class="duplicate-warning"><strong>⚠ Possible Duplicate</strong>{% for match in complaint.duplicate_matches %}<p>{{ match.complaint_id }} · {{ match.similarity }}% similarity · <a href="{{ url_for('complaint_detail', complaint_id=match.complaint_id) }}">Review</a></p>{% endfor %}</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="eyebrow">CITIZEN REGISTRATION</div>
+    <h1>Create your CivicAI account.</h1>
+    <p>Use your account to keep track of submitted civic complaints.</p>
+    <form method="post" class="form-stack">
+      <label>Full name<input name="name" required maxlength="80"></label>
+      <label>Username<input name="username" required minlength="3" maxlength="30" autocomplete="username"></label>
+      <label>Email<input type="email" name="email" required autocomplete="email"></label>
+      <label>Password<input type="password" name="password" required minlength="6" autocomplete="new-password"></label>
+      <button class="btn primary full">Create account</button>
+    </form>
+    <p class="auth-foot">Already registered? <a class="text-link" href="{{ url_for('login') }}">Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

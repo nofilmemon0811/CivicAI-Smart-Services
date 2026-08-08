@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}My Civic Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-head">
+  <div><div class="eyebrow">CITIZEN DASHBOARD</div><h1>Hello, {{ current_user.name or current_user.username }} 👋</h1><p>Track your civic reports from submission to resolution.</p></div>
+  <a class="btn primary" href="{{ url_for('report') }}">+ Report Problem</a>
+</div>
+<div class="metric-grid">
+  <div class="metric"><span>Total</span><strong>{{ stats.total }}</strong><small>Your reports</small></div>
+  <div class="metric"><span>Open</span><strong>{{ stats.open }}</strong><small>Need attention</small></div>
+  <div class="metric critical-card"><span>Critical</span><strong>{{ stats.critical }}</strong><small>Highest urgency</small></div>
+  <div class="metric"><span>Resolved</span><strong>{{ stats.resolved }}</strong><small>Completed</small></div>
+</div>
+<div class="panel">
+  <div class="panel-head"><h2>My complaints</h2><a class="text-link" href="{{ url_for('track') }}">Track by ID</a></div>
+  <div class="table-wrap"><table><thead><tr><th>ID</th><th>Issue</th><th>AI</th><th>Priority</th><th>Status</th><th>Department</th></tr></thead>
+  <tbody>
+  {% for c in complaints %}
+    <tr><td><a class="text-link" href="{{ url_for('complaint_detail', complaint_id=c.complaint_id) }}">{{ c.complaint_id }}</a></td><td><strong>{{ c.description[:70] }}{% if c.description|length > 70 %}…{% endif %}</strong><small>{{ c.location }}</small></td><td>{{ c.category }}</td><td><span class="badge {{ c.priority|lower }}">{{ c.priority }}</span></td><td>{{ c.status }}</td><td>{{ c.assigned_department }}</td></tr>
+  {% else %}<tr><td colspan="6" class="empty">You have not submitted any complaints yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+{% endblock %}

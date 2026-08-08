@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Water & Drainage",
+    "responsibility": "Water leaks, drainage, sewage and blocked drains."
+  },
+  {
+    "name": "Roads & Infrastructure",
+    "responsibility": "Road damage, potholes, sidewalks and road markings."
+  },
+  {
+    "name": "Waste Management",
+    "responsibility": "Garbage collection, bins and waste overflow."
+  },
+  {
+    "name": "Electricity Services",
+    "responsibility": "Streetlights, public electrical infrastructure and related hazards."
+  },
+  {
+    "name": "Public Safety",
+    "responsibility": "Unsafe public areas and civic safety concerns."
+  },
+  {
+    "name": "General Civic Services",
+    "responsibility": "Other local service complaints."
+  }
+]

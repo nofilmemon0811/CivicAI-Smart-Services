@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071a2b">
+  <meta name="description" content="CivicAI — AI-assisted civic reporting, prioritization and service routing.">
+  <title>{% block title %}CivicAI{% endblock %} · AI Civic Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="topline"><span>● CivicAI is live</span><span>AI-assisted · human decisions remain final</span></div>
+<nav class="nav">
+  <a class="brand" href="{{ url_for('index') }}">
+    <span class="brand-mark">✦</span>Civic<span>AI</span>
+    <small>Smart civic action</small>
+  </a>
+  <div class="nav-links">
+    <a href="{{ url_for('report') }}">Report</a>
+    <a href="{{ url_for('track') }}">Track</a>
+    <a href="{{ url_for('assistant') }}">Civic Assistant</a>
+    {% if current_user.role == 'admin' %}
+      <a href="{{ url_for('admin') }}">Operations</a>
+      <a class="nav-cta" href="{{ url_for('logout') }}">Sign out</a>
+    {% elif current_user.username %}
+      <a href="{{ url_for('dashboard') }}">My Dashboard</a>
+      <a class="nav-cta" href="{{ url_for('logout') }}">Sign out</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Sign in</a>
+      <a class="nav-cta" href="{{ url_for('register') }}">Create account</a>
+    {% endif %}
+  </div>
+</nav>
+
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="toasts">
+      {% for category, message in messages %}
+        <div class="toast {{ category }}">{{ message }}</div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  <div>
+    <strong>CivicAI</strong>
+    <span>From citizen report to AI-powered civic action.</span>
+  </div>
+  <div class="footer-links">
+    <a href="{{ url_for('report') }}">Report</a>
+    <a href="{{ url_for('track') }}">Track</a>
+    <a href="{{ url_for('assistant') }}">Knowledge</a>
+  </div>
+  <div>AI-assisted • Human review required</div>
+</footer>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}CivicAI Assistant{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">CIVIC KNOWLEDGE ASSISTANT</div>
+  <h1>Ask CivicAI.</h1>
+  <p>Ask almost any civic-service question. CivicAI uses its local knowledge base when relevant and Gemini or Qwen to answer broader civic questions responsibly.</p>
+</div>
+
+<form class="assistant-form" method="post" id="chat-form">
+  <textarea id="question" name="question" rows="4" required placeholder="Which department handles a major water leakage?">{{ question|default('') }}</textarea>
+  <button class="btn primary" type="submit" id="chat-submit">Ask CivicAI ✦ <span id="chat-loading" class="loading">Thinking…</span></button>
+</form>
+
+<section class="answer-card" id="chat-result" {% if not answer %}style="display:none"{% endif %}>
+  <div class="ai-title"><span>✦</span> CivicAI <span id="provider-badge" class="muted" style="margin-left:auto">{% if provider %}{{ provider }}{% endif %}</span></div>
+  <div class="answer" id="answer-text">{{ answer|default('') }}</div>
+  <div class="sources" id="source-list" {% if not sources %}style="display:none"{% endif %}>
+    <strong>Knowledge sources</strong>
+    {% for source in sources %}<span>{{ source.name }} · relevance {{ source.score }}</span>{% endfor %}
+  </div>
+</section>
+
+<div class="suggestions">
+  <span>Try asking:</span>
+  <button type="button" onclick="askExample('Which department handles a major water leakage?')">💧 Water Leak</button>
+  <button type="button" onclick="askExample('What is a critical civic complaint?')">🚨 Priority</button>
+  <button type="button" onclick="askExample('Who handles potholes and damaged roads?')">🛣️ Roads</button>
+  <button type="button" onclick="askExample('Who handles overflowing garbage bins?')">🗑️ Waste</button>
+  <button type="button" onclick="askExample('Who handles broken public streetlights?')">💡 Streetlights</button>
+</div>
+
+<div class="responsible compact-responsible">
+  <div><div class="eyebrow">HOW IT WORKS</div><h2>Broad civic AI, grounded where possible.</h2></div>
+  <p>CivicAI retrieves relevant local guidance when available. Gemini or Qwen can also answer broader civic questions when the knowledge base has no exact match. Location-specific and real-time facts are never invented.</p>
+</div>
+
+<script>
+const form = document.getElementById('chat-form');
+const input = document.getElementById('question');
+const result = document.getElementById('chat-result');
+const answerText = document.getElementById('answer-text');
+const sourceList = document.getElementById('source-list');
+const providerBadge = document.getElementById('provider-badge');
+const submit = document.getElementById('chat-submit');
+const loading = document.getElementById('chat-loading');
+
+function askExample(text) {
+  input.value = text;
+  input.focus();
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const question = input.value.trim();
+  if (!question) return;
+
+  submit.disabled = true;
+  loading.style.display = 'inline';
+  answerText.textContent = 'CivicAI is checking the civic knowledge base…';
+  result.style.display = 'block';
+  sourceList.style.display = 'none';
+  providerBadge.textContent = '';
+
+  try {
+    const response = await fetch('{{ url_for("api_chat") }}', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to get an answer.');
+    }
+
+    answerText.textContent = data.answer || 'No answer was returned.';
+    providerBadge.textContent = data.provider ? `Powered by ${data.provider}` : '';
+
+    if (Array.isArray(data.sources) && data.sources.length) {
+      sourceList.innerHTML = '<strong>Knowledge sources</strong>' + data.sources.map(source =>
+        `<span>${escapeHtml(source.name)} · relevance ${escapeHtml(String(source.score))}</span>`
+      ).join('');
+      sourceList.style.display = 'flex';
+    }
+  } catch (error) {
+    answerText.textContent = error.message || 'CivicAI could not answer right now.';
+  } finally {
+    submit.disabled = false;
+    loading.style.display = 'none';
+  }
+});
+
+function escapeHtml(value) {
+  return value.replace(/[&<>'"]/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[char]));
+}
+</script>
+{% endblock %}

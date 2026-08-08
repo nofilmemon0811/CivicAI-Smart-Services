@@ -1,0 +1,24 @@
+
+{% extends "base.html" %}
+{% block title %}Track Complaint{% endblock %}
+{% block content %}
+<div class="page-head"><div class="eyebrow">TRACK</div><h1>Where is your complaint?</h1><p>Enter the complaint ID you received after submission.</p></div>
+<form class="track-form" method="post"><input name="complaint_id" placeholder="CMP-0001" required><button class="btn primary">Track →</button></form>
+{% if complaint %}
+<section class="detail-card">
+  <div class="detail-top"><div><span class="eyebrow">{{ complaint.complaint_id }}</span><h2>{{ complaint.summary or complaint.description[:80] }}</h2></div><span class="badge {{ complaint.priority|lower }}">{{ complaint.priority }}</span></div>
+  <div class="detail-grid">
+    <div><span>Category</span><strong>{{ complaint.category }}</strong></div>
+    <div><span>Department</span><strong>{{ complaint.assigned_department }}</strong></div>
+    <div><span>Status</span><strong>{{ complaint.status }}</strong></div>
+    <div><span>Location</span><strong>{{ complaint.location }}</strong></div>
+  </div>
+  <div class="timeline">
+    {% for step in ["Submitted","AI Analyzed","Assigned","In Progress","Resolved"] %}
+      <div class="step {% if ["Submitted","AI Analyzed","Assigned","In Progress","Resolved"].index(complaint.status) >= loop.index0 %}done{% endif %}"><i></i><span>{{ step }}</span></div>
+    {% endfor %}
+  </div>
+  <a class="text-link" href="{{ url_for('complaint_detail', complaint_id=complaint.complaint_id) }}">View full complaint →</a>
+</section>
+{% endif %}
+{% endblock %}

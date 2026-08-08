@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Report a Problem{% endblock %}
+{% block content %}
+<div class="page-head"><div class="eyebrow">CITIZEN REPORT</div><h1>Tell us what needs fixing.</h1><p>Describe the issue in plain language. CivicAI will classify it, estimate risk and route it to the right department.</p></div>
+<form class="form-card" method="post" enctype="multipart/form-data" onsubmit="showLoading(this)">
+  <label>Problem description <span>*</span>
+    <textarea id="description" name="description" rows="7" minlength="10" required placeholder="Example: There is a large water leak near the main road and traffic is becoming difficult."></textarea>
+  </label>
+  <div class="ai-helper"><button class="small-btn" type="button" onclick="improveComplaint()">✦ Improve with AI</button><span id="improveStatus">CivicAI can make your description clearer without adding facts.</span></div>
+  <div class="two-col">
+    <label>Location <span>*</span><input id="location" name="location" required placeholder="Street, area, landmark"></label>
+    <label>Your name <small>optional</small><input name="name" placeholder="Anonymous is okay" value="{{ current_user.name or '' }}"></label>
+  </div>
+  <div class="two-col">
+    <label>Contact <small>optional</small><input name="contact" placeholder="Phone or email"></label>
+    <label>Photo <small>optional · AI vision enabled</small><input type="file" name="image" accept=".png,.jpg,.jpeg,.webp"></label>
+  </div>
+  <button class="btn primary full" type="submit">Analyze & Submit Complaint <span class="loading">Analyzing…</span></button>
+  <p class="form-note">AI output is decision support. Human administrators make final service decisions.</p>
+</form>
+{% endblock %}

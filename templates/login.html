@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Admin Login' if admin_mode else 'Login' }}{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="eyebrow">{{ 'ADMIN ACCESS' if admin_mode else 'CITIZEN ACCESS' }}</div>
+    <h1>{{ 'Administrator sign in' if admin_mode else 'Welcome back' }}</h1>
+    <p>{{ 'Manage complaints, AI insights and civic operations.' if admin_mode else 'Track your complaints and access CivicAI.' }}</p>
+    <form method="post" class="form-stack">
+      <input type="hidden" name="next" value="{{ next|default('') }}">
+      <label>Username<input name="username" required autocomplete="username"></label>
+      <label>Password<input type="password" name="password" required autocomplete="current-password"></label>
+      <button class="btn primary full">Sign in</button>
+    </form>
+    {% if not admin_mode %}
+      <p class="auth-foot">New citizen? <a class="text-link" href="{{ url_for('register') }}">Create an account</a></p>
+      <p class="muted small">Demo citizen: <b>citizen</b> / <b>civic123</b></p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
