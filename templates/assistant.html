@@ -1,6 +1,74 @@
 {% extends "base.html" %}
 {% block title %}CivicAI Assistant{% endblock %}
 {% block content %}
+<style>
+.answer {
+  line-height: 1.75;
+  color: #243447;
+  font-size: 15.5px;
+}
+
+.answer p {
+  margin: 0 0 14px;
+}
+
+.answer p:last-child {
+  margin-bottom: 0;
+}
+
+.answer strong {
+  font-weight: 700;
+}
+
+.answer em {
+  font-style: italic;
+}
+
+.ai-heading {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 16px 0 9px;
+}
+
+.ai-heading:first-child {
+  margin-top: 0;
+}
+
+.ai-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 9px 0;
+}
+
+.ai-step-number {
+  flex: 0 0 25px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  background: rgba(0, 100, 180, 0.10);
+}
+
+.ai-bullet {
+  display: flex;
+  gap: 9px;
+  margin: 7px 0;
+}
+
+.ai-bullet > span {
+  font-weight: 700;
+}
+
+.answer a {
+  word-break: break-word;
+}
+</style>
+
 <div class="page-head">
   <div class="eyebrow">CIVIC KNOWLEDGE ASSISTANT</div>
   <h1>Ask CivicAI.</h1>
@@ -76,7 +144,7 @@ form.addEventListener('submit', async (event) => {
       throw new Error(data.error || 'Unable to get an answer.');
     }
 
-    answerText.textContent = data.answer || 'No answer was returned.';
+    answerText.innerHTML = formatAIResponse(data.answer || 'No answer was returned.');
     providerBadge.textContent = data.provider ? `Powered by ${data.provider}` : '';
 
     if (Array.isArray(data.sources) && data.sources.length) {
@@ -93,8 +161,60 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
+function formatAIResponse(value) {
+  if (!value) return "";
+
+  // Escape HTML first so AI output can never inject HTML/JS.
+  let text = escapeHtml(String(value).trim());
+
+  // Remove Markdown code fences and horizontal rules.
+  text = text.replace(/```[\s\S]*?```/g, match => {
+    const clean = match.replace(/^```[a-zA-Z0-9_-]*\s*/, "").replace(/```$/, "");
+    return clean.trim();
+  });
+  text = text.replace(/^\s*([-_*])(?:\s*\1){2,}\s*$/gm, "");
+
+  // Convert common Markdown headings into clean section headings.
+  text = text.replace(/^#{1,6}\s+(.+)$/gm, '<div class="ai-heading">$1</div>');
+
+  // Convert bold / italic Markdown.
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  text = text.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
+
+  // Convert numbered steps.
+  text = text.replace(
+    /^\s*(\d+)\.\s+(.+)$/gm,
+    '<div class="ai-step"><span class="ai-step-number">$1</span><div>$2</div></div>'
+  );
+
+  // Convert simple bullet points.
+  text = text.replace(
+    /^\s*[-*•]\s+(.+)$/gm,
+    '<div class="ai-bullet"><span>•</span><div>$1</div></div>'
+  );
+
+  // Turn remaining line breaks into paragraph/line spacing.
+  const blocks = text
+    .split(/\n{2,}/)
+    .map(block => block.trim())
+    .filter(Boolean)
+    .map(block => {
+      if (
+        block.startsWith('<div class="ai-heading">') ||
+        block.startsWith('<div class="ai-step">') ||
+        block.startsWith('<div class="ai-bullet">')
+      ) {
+        return block;
+      }
+      return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+    });
+
+  return blocks.join("");
+}
+
 function escapeHtml(value) {
-  return value.replace(/[&<>'"]/g, char => ({
+  return String(value).replace(/[&<>'"]/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
   }[char]));
 }
