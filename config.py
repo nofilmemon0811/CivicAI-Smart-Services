@@ -32,9 +32,9 @@ else:
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "change-this-secret-before-deployment")
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_gemin_api_key_here")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6KYOm_LaEPEs_269l6S2MPxU2RWhsu11sKB-XVq5UZBtA")
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-    HF_TOKEN = os.getenv("HF_TOKEN", "your_huggingface_token_here")
+    HF_TOKEN = os.getenv("HF_TOKEN", "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")
     HF_MODEL = os.getenv("HF_MODEL", "Qwen/Qwen2.5-7B-Instruct")
     HF_CHAT_URL = os.getenv("HF_CHAT_URL", "https://router.huggingface.co/v1/chat/completions")
     ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
