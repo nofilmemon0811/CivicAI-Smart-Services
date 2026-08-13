@@ -91,10 +91,58 @@ async function generateAIInsight(){
   const box=document.getElementById('aiInsight'); const button=event?.currentTarget; if(button) button.disabled=true; box.textContent='Analyzing current complaint data…';
   try { const r=await fetch('{{ url_for("api_ai_insights") }}',{method:'POST'}); const d=await r.json(); box.textContent=d.insight||d.error||'No insight available.'; } catch(e) { box.textContent='AI insight is temporarily unavailable. Please try again.'; } finally { if(button) button.disabled=false; }
 }
+function cleanCopilotText(text){
+  if(!text) return '';
+
+  text = text
+    .replace(/\\*\\*/g, '')
+    .replace(/\\*/g, '')
+    .replace(/^#{1,6}\\s*/gm, '')
+    .replace(/`/g, '')
+    .replace(/^\\s*[-•▪▫◦]\\s*/gm, '')
+    .replace(/^[ \\t]*>\\s?/gm, '')
+    .replace(/[🔹🔸➡️✦]/gu, '');
+
+  text = text.replace(/^\\s*(\\d+)[.)]\\s*/gm, '$1. ');
+
+  return text
+    .split('\\n')
+    .map(line => line.trim())
+    .filter((line, index, arr) => line !== '' || (index > 0 && arr[index - 1] !== ''))
+    .join('\\n')
+    .trim();
+}
+
 async function askCopilot(){
-  const q=document.getElementById('copilotQuestion').value.trim(); if(!q)return;
-  const box=document.getElementById('copilotAnswer'); box.textContent='CivicAI is reviewing the complaint records…';
-  try { const r=await fetch('{{ url_for("api_copilot") }}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})}); const d=await r.json(); box.textContent=d.answer||d.error||'No answer available.'; } catch(e) { box.textContent='Admin Copilot is temporarily unavailable. Please try again.'; }
+  const q=document.getElementById('copilotQuestion').value.trim();
+  if(!q)return;
+
+  const box=document.getElementById('copilotAnswer');
+  const button=document.querySelector('#copilotQuestion + button');
+
+  box.textContent='CivicAI is reviewing the complaint records…';
+  if(button) button.disabled=true;
+
+  try {
+    const r=await fetch('{{ url_for("api_copilot") }}',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:q})
+    });
+
+    const d=await r.json();
+
+    if(!r.ok){
+      box.textContent=d.error || 'Admin Copilot is temporarily unavailable. Please try again.';
+      return;
+    }
+
+    box.textContent=cleanCopilotText(d.answer || d.error || 'No answer available.');
+  } catch(e) {
+    box.textContent='Admin Copilot is temporarily unavailable. Please try again.';
+  } finally {
+    if(button) button.disabled=false;
+  }
 }
 </script>
 {% endblock %}

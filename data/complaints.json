@@ -4,7 +4,7 @@
     "description": "Large water leak near the main road is making traffic difficult.",
     "location": "Latifabad Main Road",
     "date": "2026-08-08T17:13:06.073182+00:00",
-    "status": "In Progress",
+    "status": "Resolved",
     "category": "Water",
     "priority": "Critical",
     "assigned_department": "Water & Drainage",
@@ -15,7 +15,7 @@
     "contact": "",
     "image": null,
     "duplicate_matches": [],
-    "resolved_at": null
+    "resolved_at": "2026-08-13T17:27:47.005103+00:00"
   },
   {
     "complaint_id": "CMP-0002",
@@ -632,7 +632,7 @@
     "description": "gali mein kachra pasa huwa hai",
     "location": "hirabad",
     "date": "2026-08-08T22:30:21.617771+00:00",
-    "status": "AI Analyzed",
+    "status": "Resolved",
     "category": "Other",
     "priority": "Medium",
     "assigned_department": "General Civic Services",
@@ -643,7 +643,7 @@
     "contact": "03120126913",
     "image": "images.jpg",
     "duplicate_matches": [],
-    "resolved_at": null,
+    "resolved_at": "2026-08-13T17:38:55.533671+00:00",
     "owner_username": "ali",
     "risk_level": "Medium",
     "public_impact": "Medium",
