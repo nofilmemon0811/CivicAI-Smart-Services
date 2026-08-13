@@ -91,25 +91,41 @@ async function generateAIInsight(){
   const box=document.getElementById('aiInsight'); const button=event?.currentTarget; if(button) button.disabled=true; box.textContent='Analyzing current complaint data…';
   try { const r=await fetch('{{ url_for("api_ai_insights") }}',{method:'POST'}); const d=await r.json(); box.textContent=d.insight||d.error||'No insight available.'; } catch(e) { box.textContent='AI insight is temporarily unavailable. Please try again.'; } finally { if(button) button.disabled=false; }
 }
-function cleanCopilotText(text){
-  if(!text) return '';
+function cleanCopilotText(text) {
+  if (!text) return '';
 
-  text = text
-    .replace(/\\*\\*/g, '')
-    .replace(/\\*/g, '')
-    .replace(/^#{1,6}\\s*/gm, '')
-    .replace(/`/g, '')
-    .replace(/^\\s*[-•▪▫◦]\\s*/gm, '')
-    .replace(/^[ \\t]*>\\s?/gm, '')
-    .replace(/[🔹🔸➡️✦]/gu, '');
+  let cleaned = String(text);
 
-  text = text.replace(/^\\s*(\\d+)[.)]\\s*/gm, '$1. ');
+  // Remove Markdown bold / italic markers.
+  cleaned = cleaned.replace(/\*\*/g, '');
+  cleaned = cleaned.replace(/\*/g, '');
 
-  return text
-    .split('\\n')
+  // Remove Markdown headings.
+  cleaned = cleaned.replace(/^#{1,6}\s*/gm, '');
+
+  // Remove backticks.
+  cleaned = cleaned.replace(/`/g, '');
+
+  // Remove Markdown bullets.
+  cleaned = cleaned.replace(/^\s*[-•▪▫◦]\s*/gm, '');
+
+  // Remove blockquote markers.
+  cleaned = cleaned.replace(/^\s*>\s?/gm, '');
+
+  // Remove decorative symbols.
+  cleaned = cleaned.replace(/[🔹🔸➡️✦]/gu, '');
+
+  // Normalize numbered lists.
+  cleaned = cleaned.replace(/^\s*(\d+)[.)]\s*/gm, '$1. ');
+
+  // Clean extra whitespace while preserving paragraph breaks.
+  return cleaned
+    .split(/\r?\n/)
     .map(line => line.trim())
-    .filter((line, index, arr) => line !== '' || (index > 0 && arr[index - 1] !== ''))
-    .join('\\n')
+    .filter((line, index, arr) => {
+      return line !== '' || (index > 0 && arr[index - 1] !== '');
+    })
+    .join('\n')
     .trim();
 }
 
